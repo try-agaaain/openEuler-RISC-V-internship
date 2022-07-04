@@ -9,7 +9,7 @@
 
 但是在嵌入式开发中，所开发的程序需要运行在单独的目标机（Target Board）上，因而需要搭建一个小型的开发环境，通过路由器（Router）使主机和目标机进行通信。在主机中进行软件的编辑、编译、调试等工作，再将开发好的软件在目标机上运行。
 
-![image-20220630100856460](images/Figure_1.png)
+<img src="images/Figure_1.png" alt="image-20220702205219819" style="zoom:50%;" />
 
 在实际开发中，可以用模拟器来模拟目标机，比如后面要介绍到的QEMU模拟器。
 
@@ -29,7 +29,7 @@
 
 + 交叉（cross）编译中，构建系统和主机系统采用同一系统，但是目标系统采用另一系统。也即在主机系统中开发的应用程序并不是为主机系统开发的，而是专门为目标系统开发的（主机系统与目标系统采用的操作系统不同），可用公式表达为：build==host !=target。下图是交叉编译的示意图：
 
-  <img src="images/Figure_2.png" alt="image-20220630165531569" style="zoom:50%;" />
+  <img src="images/Figure_2.png" alt="image-20220702205549644" style="zoom: 50%;" />
 
   
 
@@ -39,7 +39,7 @@
 
 调试可分为本地调试和远程调试两种：本地调试中所开发的程序运行在本地，远程调试中所开发的程序是运行在交叉环境中的。下图是这两种调试过程的示意图：
 
-<img src="images/Figure_3.png" alt="image-20220630150021133" style="zoom:50%;" />
+<img src="images/Figure_3.png" alt="image-20220702205701143" style="zoom: 33%;" />
 
 在本地调试中（如上图左侧示意图），对于编译链接后生成的可执行文件（比如hello.out），在调试的的过程中（如执行gdb hello.out），gdb进程会fork出一个子进程用于执行被调试的目标程序。gdb进程和子进程通过ptrace系统调用进行通信。当子进程运行到断点处时，将会进入暂停状态，此时调试者就可以查看被调试程序在断点处的各种信息。
 
@@ -86,8 +86,8 @@ Makefile由一条或多条队则组成，每条规则由三部分组成：
 这是一个**文件的依赖关系**，也就是说，target这一个或多个的目标文件依赖于prerequisites中的文件，其生成规则定义在command中。下面是一个例子：
 
 ```makefile
-hello.out: hello.o	# 规则1：链接器将hello.o和标准库文件组合，形成最终的可执行文件hello.out
-	gcc hello.o -o hello.out
+a.out: hello.o	# 规则1：链接器将hello.o和标准库文件组合，形成最终的可执行文件hello.out
+	gcc hello.o -o a.out
 hello.o: hello.s	# 规则2：汇编器将hello.s转化为机器指令，生成hello.o文件
 	gcc -c hello.s -o hello.o
 hello.s: hello.i	# 规则3：编译器将hello.i转为为汇编指令，生成汇编语言文件hello.s
@@ -98,7 +98,9 @@ hello.i: hello.c	# 规则4：对源文件hello.c进行预处理，生成hello.i�
 
 上面的过程其实就是源程序经过预处理、编译、汇编、链接，生成可执行文件的过程。
 
-第一条规则是目标规则，它依赖于文件hello.o，由于目录中没有该文件，因而make会查看是否存在hello.o规则，检索后发现规则2可以生产hello.o文件，因而转去执行规则2。由于规则2依赖于规则3生成的hello.out文件，因而make将转去执行规则3，而规则3依赖于规则4中的hello.i文件，因而make在执行规则3时会转去执行规则4。
+<img src="images/Figure_4.png" alt="image-20220702205908876" style="zoom: 25%;" />
+
+第一条规则是目标规则，它依赖于文件hello.o，由于目录中没有该文件，因而make会查看是否存在hello.o规则，检索后发现规则2可以生产hello.o文件，因而转去执行规则2；由于规则2依赖于规则3生成的hello.out文件，因而make将转去执行规则3；而规则3依赖于规则4中的hello.i文件，因而make在执行规则3时会转去执行规则4。
 
 综合来看，上面一系列命令的执行顺序为：
 
@@ -106,7 +108,7 @@ hello.i: hello.c	# 规则4：对源文件hello.c进行预处理，生成hello.i�
 gcc -E hello.c -o hello.i	# 规则4：预处理
 gcc -S hello.i -o hello.s	# 规则3：编译
 gcc -c hello.s -o hello.o	# 规则2：汇编
-gcc hello.o -o hello.out	# 规则1：链接
+gcc hello.o -o a.out		# 规则1：链接
 ```
 
 此外，Makefile还可以包含其他元素：例如当一个文件当中有多条规则时，make工具会默认首先执行第一条规则。但如果最终目标并没有编写为第一条规则，则可以通过缺省规则（`.DEFAULT_GOAL`）进行指定。

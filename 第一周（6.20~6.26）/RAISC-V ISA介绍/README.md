@@ -1,5 +1,7 @@
 # RISC-V ISA介绍
 
+
+
 ## 一、ISA 的基本介绍
 
 ### 1.ISA是什么
@@ -55,7 +57,7 @@ ISA（处理器）的宽度指的是CPU中**通用寄存器**的宽度(二进制
 
 官方ISA标准可从https://riscv.org/technical/specifications中下载，整个指令集分为两卷，第一卷为非特权指令，第二卷为特权指令。
 
-#### 5.1 RISC-V ISA的命名规范
+#### 2.1 RISC-V ISA的命名规范
 
 ISA的命名格式为：$RV[\#\#\#][abc......xyz]$
 
@@ -63,7 +65,7 @@ ISA的命名格式为：$RV[\#\#\#][abc......xyz]$
 
 RISC-V芯片可根据需要进行定制，定制的芯片可支持特定的一组模块。例如RV32IMA表示的是：支持I模块、M模块、A模块的32位的RISC-V指令集；RV64GC则表示：支持G模块和C模块的64位的RISC-V指令集。
 
-#### 5.2 模块化的ISA
+#### 2.2 模块化的ISA
 
 传统的计算机体系结构采用增量的ISA，为了保证向后兼容性，同一个体系架构下的新一代处理器不仅实现了新的ISA扩展，还必须实现过去的所有扩展，目的是保持向后的二进制兼容性，典型的代表有80x86。
 
@@ -95,7 +97,7 @@ RISC-V允许在实现中以可选的形式实现其他标准化和非标准化�
 
 需要注意的是，在RISC-V中浮点指令、乘法指令并非基本指令，而属于扩展指令。 
 
-#### 5.3 通用寄存器（General Purpose Registers）
+#### 2.3 通用寄存器（General Purpose Registers）
 
 RISC-V的Unprivileged Specification定义了32个通用寄存器以及一个PC，这32个通用寄存器在RV321/RV64I/RV128I的CPU上都是一样的，如果实现支持F/D扩展则需要额外支持32个浮点(Float Point)寄存器。另外RV32E将32个通用寄存器缩减为16个。这32个通用寄存器的和PC的结构见下图：
 
@@ -107,9 +109,9 @@ RISC-V的Unprivileged Specification定义了32个通用寄存器以及一个PC�
 
 寄存器的宽度由ISA指定，RV32的寄存器宽度为32位，RV64的寄存器宽度为64位，依次类推。每个寄存器具体编程时有特定的用途以及各自的别名。由RISC-V ApplicationBinary Interface (ABI)定义。
 
-#### 5.4 Hart
+#### 2.4 Hart
 
-HART即<font color='red'>**Har</font>dware <font color='red'>T</font>hread**，可翻译为硬件线程。早期的CPU的一个cu单元只有一条指令流，随着硬件的发展，出现了超线程技术，使得一个CPU可以有两个或多个指令执行流，例如Intel设计4核的CPU，但却有8个逻辑处理器。参考官方手册《The RISC-V Instruction Set Manual Volume I: Unprivileged ISA》1.2节，hart定义如下：
+HART即**<font color='red'>Har</font>dware <font color='red'>T</font>hread**，可翻译为硬件线程。早期的CPU的一个cu单元只有一条指令流，随着硬件的发展，出现了超线程技术，使得一个CPU可以有两个或多个指令执行流，例如Intel设计4核的CPU，但却有8个逻辑处理器。参考官方手册《The RISC-V Instruction Set Manual Volume I: Unprivileged ISA》1.2节，hart定义如下：
 
 > From the perspective of software running in a given execution environment, a hart is a resource that autonomously fetches and executes RISC-V instructions within that execution environment. In this respect, a hart behaves like a hardware thread resource even if time-multiplexed onto real hardware by the execution environment. 
 >
@@ -134,13 +136,13 @@ RISC-V的Privileged Specification定义了三个特权级别(privilege level)。
 
 
 
-#### 5.6 Control and Status Registers（CSR）
+#### 2.6 Control and Status Registers（CSR）
 
 为实现特权分级的保护，不同的特权级别下有各自的一套控制和状态寄存器(CSR)，同时RISC-V定义了专门用于操作CSR的指令（“Zicsr”扩展），用于控制(Control)和获取相应Level下的处理器工作状态。高级别的特权级别下可以访问低级别的CSR，譬如Machine Level下可以访问 Supervisor/User Level的CSR，以此类推；但反之不可以，当低级别的指令访问高级别的寄存器时，将出现异常。通过这样的方式，便实现了特权级别的保护。
 
 在系统调用的过程中，低级别的指令不可避免的需要访问高级别寄存器，为实现这一功能，RISC-V定义了特定的指令（ECALL/EBREAK），便于在不同特权级别之间进行切换。当User态的指令需要访问Machine态的寄存器时，通过ECALL指令进入Machine态，在该模式下完成相应的指令功能，再通过EBREAK指令返回到User态。
 
-#### 5.7 内存管理与保护
+#### 2.7 内存管理与保护
 
  RISC-V中有两类内存保护，一种是低级别的物理内存保护（Physical Memory Protection, PMP），如下图左侧示意图。这种保护方式将内存划分为特定的几个部分，在X-only部分的地址区域只存放指令，在RWX地址区域内的存放可读可写可执行的内容，在Lock地址区域存放进程通信的信号量。这种保护较为简单，基于物理地址完成。
 
@@ -148,7 +150,7 @@ RISC-V的Privileged Specification定义了三个特权级别(privilege level)。
 
 另一种更高级的保护方式需要虚拟内存（Virtual Memory），如上图右侧所示，此时程序访问的地址是虚拟地址而非物理地址，通过MMU完成虚拟地址到物理地址的转换。
 
-#### 5.8异常和中断 
+#### 2.8异常和中断 
 
 异常由指令触发，如下图左侧示意图所示，当CPU执行某条指令出发异常时，将调用相关的异常处理程序，当异常处理程序结束后再回到触发异常的指令，接着继续执行。
 
@@ -160,9 +162,11 @@ RISC-V的Privileged Specification定义了三个特权级别(privilege level)。
 
 ## 参考资料
 
-【参考1】: The RISC-V Instruction Set Manual, Volume Ⅰ: Unprivileged ISA,Document Version 20191213
-【参考2】:The RISC-V Instruction Set Manual, Volume Ⅱ: Privileged  Architecture, Document Version 20190608-Priv-MSU-Ratified
-【参考3】: RISC-V手册(中文版): http://riscvbook.com/chinese/
+【参考1】：The RISC-V Instruction Set Manual, Volume Ⅰ: Unprivileged ISA,Document Version 20191213
+
+【参考2】：The RISC-V Instruction Set Manual, Volume Ⅱ: Privileged  Architecture, Document Version 20190608-Priv-MSU-Ratified
+
+【参考3】：RISC-V手册(中文版): http://riscvbook.com/chinese/
 
 
 
