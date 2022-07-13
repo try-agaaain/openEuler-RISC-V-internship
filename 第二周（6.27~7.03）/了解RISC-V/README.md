@@ -52,7 +52,13 @@ RISC-V有以下特点：
 
 ![img](images/Figure_4.jpeg)
 
-基于RISC-V的内核和片上系统现在超过上百款，例如伯克利大学开发的商业SiFive，我国自主研发的“香山”处理器核心等。
+<div align='center'><font size='2px' color='grey'>RISC-V软硬件生态</font></div>
+
+在AIoT时代，RISC-V架构因其开放、灵活的特性，有望成为下一代广泛应用的CPU架构。基于RISC-V的内核和片上系统现已超过上百款，国内研发的RISC-V处理器有堪智k510、玄铁系列处理器、香山处理器等。
+
+
+
+
 
 ## 参考资料：
 
